@@ -2,6 +2,7 @@
 
 #include "../http2/stream.h"
 #include "unary.h"
+#include "status_code.h"
 
 class GRPCStream {
 public:
@@ -10,4 +11,5 @@ public:
 	http2::Stream* stream;
 	UnaryMethodHandler* handler;
 	void writeResponse(uint8_t* data, uint32_t dataLen);
+	void writeResponseError(StatusCode code);
 };

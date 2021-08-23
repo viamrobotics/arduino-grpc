@@ -6,6 +6,7 @@
 #include <memory>
 #include "grpc_stream.h"
 #include "unary.h"
+#include "status_code.h"
 
 void GRPCServer::registerUnaryMethod(UnaryMethodHandler* handler) {
 	this->unaryMethods.push_back(handler);
@@ -55,8 +56,8 @@ void GRPCServer::newStream(http2::Stream* stream, HeadersFrame* frame) {
 	}
 	UnaryMethodHandler* handler = findMethod(method.get());
 	if (handler == nullptr) {
-		debugPrint("write out an error frame here for unimplemented");
-		debugPrint(method.get());
+		GRPCStream tempStream = GRPCStream(stream, handler);
+		tempStream.writeResponseError(StatusCode::UNIMPLEMENTED);
 		return;	
 	}
 	this->streams.push_back(new GRPCStream(stream, handler));
